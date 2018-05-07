@@ -25,9 +25,10 @@ class ShsTermSelect extends WebformTermSelect {
    */
   public function getDefaultProperties() {
     $properties = parent::getDefaultProperties() + [
-      'force_deepest' => FALSE,
-      'force_deepest_error' => '',
-    ];
+        'force_deepest' => FALSE,
+        'force_deepest_error' => '',
+        'cache_options' => FALSE,
+      ];
 
     unset($properties['select2']);
     unset($properties['chosen']);
@@ -80,8 +81,21 @@ class ShsTermSelect extends WebformTermSelect {
         ],
       ],
     ];
+    $form['term_reference']['cache_options'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Cache terms'),
+      '#default_value' => isset($element_properties['cache_options']) ? $element_properties['cache_options'] : FALSE,
+      '#description' => t('Speeds up the loading time for Vocabularies containing many Taxonomy Terms.'),
+    ];
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setOptions(array &$element) {
+    \Drupal\webform_shs\Element\ShsTermSelect::setOptions($element);
   }
 
 }

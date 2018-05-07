@@ -2,10 +2,9 @@
 
 namespace Drupal\webform_shs\Element;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\Select;
-use Drupal\Core\Url;
-use Drupal\webform\Element\WebformTermReferenceTrait;
 
 /**
  * Provides a webform element for an shs term select menu.
@@ -14,17 +13,23 @@ use Drupal\webform\Element\WebformTermReferenceTrait;
  */
 class ShsTermSelect extends Select {
 
-  use WebformTermReferenceTrait;
+  /**
+   * Locally cached list of term options.
+   *
+   * @var NULL|array
+   */
+  protected static $options = NULL;
 
   /**
    * {@inheritdoc}
    */
   public function getInfo() {
     return [
-      '#vocabulary' => '',
-      '#force_deepest' => FALSE,
-      '#force_deepest_error' => '',
-    ] + parent::getInfo();
+        '#vocabulary' => '',
+        '#force_deepest' => FALSE,
+        '#force_deepest_error' => '',
+        '#cache_options' => FALSE,
+      ] + parent::getInfo();
   }
 
   /**
@@ -55,6 +60,7 @@ class ShsTermSelect extends Select {
       'anyLabel' => isset($element['#empty_option']) ? $element['#empty_option'] : t('- None -'),
       'anyValue' => '_none',
       'force_deepest' => $element['#force_deepest'],
+      'cache_options' => $element['#cache_options'],
       'addNewLabel' => t('Add another item'),
     ];
 
@@ -140,6 +146,136 @@ class ShsTermSelect extends Select {
       }
 
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function setOptions(array &$element) {
+    if (!empty($element['#options'])) {
+      return;
+    }
+
+    if (!\Drupal::moduleHandler()->moduleExists('taxonomy') || empty($element['#vocabulary'])) {
+      $element['#options'] = [];
+      return;
+    }
+
+    $element['#options'] = static::getOptions($element);
+  }
+
+  /**
+   * Get options of all terms in given vocabulary.
+   *
+   * @param array $element
+   *   The element.
+   *
+   * @return array
+   *   An associative array of term options.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   */
+  protected static function getOptions($element) {
+
+    if (is_null(static::$options)) {
+      static::$options = self::buildOptions($element['#vocabulary'], !empty($element['#cache_options']));
+    }
+
+    return static::$options;
+  }
+
+  /**
+   * Return an option cache ID for provided vocabulary.
+   *
+   * @param string $vid
+   *   Vocabulary id.
+   *
+   * @return string
+   *   Cache ID.
+   */
+  public static function getOptionsCacheId($vid) {
+    $cid = 'webform_shs:options:' . $vid;
+
+    return $cid;
+  }
+
+  /**
+   * Invalidate options cache for provided vocabulary.
+   *
+   * @param string $vid
+   *   Vocabulary id.
+   */
+  public static function invalidateOptionsCache($vid) {
+    $cid = self::getOptionsCacheId($vid);
+    \Drupal::cache()->invalidate($cid);
+  }
+
+  /**
+   * Build a list of term options for provided vocabulary.
+   *
+   * @param string $vid
+   *   Vocabulary id.
+   * @param bool $cache_options
+   *   Should we use cache?
+   * @return array
+   *   An associative array of terms, where keys are tid and values are
+   *   term name.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   */
+  public static function buildOptions($vid, $cache_options = FALSE) {
+    if ($cache_options) {
+      $options = self::buildCachedTermOptions($vid);
+    }
+    else {
+      $options = self::buildTermOptions($vid);
+    }
+
+    return $options;
+  }
+
+  /**
+   * Build a cached list of term options for provided vocabulary.
+   *
+   * @param string $vid
+   *   Vocabulary id.
+   *
+   * @return array
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   */
+  protected static function buildCachedTermOptions($vid) {
+    $cid = self::getOptionsCacheId($vid);
+
+    if ($cache = \Drupal::cache()->get($cid)) {
+      $options = $cache->data;
+    }
+    else {
+      $options = self::buildTermOptions($vid);
+      \Drupal::cache()->set($cid, $options, Cache::PERMANENT);
+    }
+
+    return $options;
+  }
+
+  /**
+   * Build a list of term options for provided vocabulary.
+   *
+   * @param string $vid
+   *   Vocabulary id.
+   *
+   * @return array
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   */
+  protected static function buildTermOptions($vid) {
+    $options = [];
+
+    /** @var \Drupal\taxonomy\TermStorageInterface $taxonomy_storage */
+    $taxonomy_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $terms = $taxonomy_storage->loadTree($vid);
+
+    foreach ($terms as $item) {
+      $options[$item->tid] = $item->name;
+    }
+
+    return $options;
   }
 
 }
