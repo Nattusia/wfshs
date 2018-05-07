@@ -29,6 +29,7 @@ class ShsTermSelect extends Select {
         '#force_deepest' => FALSE,
         '#force_deepest_error' => '',
         '#cache_options' => FALSE,
+        '#depth_labels' => [],
       ] + parent::getInfo();
   }
 
@@ -61,6 +62,7 @@ class ShsTermSelect extends Select {
       'anyValue' => '_none',
       'force_deepest' => $element['#force_deepest'],
       'cache_options' => $element['#cache_options'],
+      '#depth_labels' => [],
       'addNewLabel' => t('Add another item'),
     ];
 
@@ -77,6 +79,7 @@ class ShsTermSelect extends Select {
 
     $settings_shs = [
       'settings' => $settings,
+      'labels' => $element['#depth_labels'],
       'bundle' => $bundle,
       'baseUrl' => 'shs-term-data',
       'cardinality' => $cardinality,
