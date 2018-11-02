@@ -3,6 +3,6 @@ type: module
 description: 'Integrates Simple Hierarchical Select module with Webform.'
 dependencies:
   - webform
-  - shs
+  - 'shs (>= 1.0-alpha3)'
 core: 8.x
 package: Webform

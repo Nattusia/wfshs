@@ -5,7 +5,7 @@ namespace Drupal\webform_shs\Plugin\WebformElement;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformElement\WebformTermSelect;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\webform_shs\Element\ShsTermSelect;
+use Drupal\webform_shs\Element\ShsTermSelect as ShsTermSelectShs;
 
 /**
  * Provides a 'webform_shs_term_select' Webform element.
@@ -238,7 +238,7 @@ class ShsTermSelect extends WebformTermSelect {
    * {@inheritdoc}
    */
   protected function setOptions(array &$element) {
-    ShsTermSelect::setOptions($element);
+    ShsTermSelectShs::setOptions($element);
   }
 
 }
