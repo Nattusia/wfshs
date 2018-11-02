@@ -5,6 +5,7 @@ namespace Drupal\webform_shs\Plugin\WebformElement;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformElement\WebformTermSelect;
 use Drupal\webform\WebformSubmissionInterface;
+use Drupal\webform_shs\Element\ShsTermSelect;
 
 /**
  * Provides a 'webform_shs_term_select' Webform element.
@@ -33,11 +34,11 @@ class ShsTermSelect extends WebformTermSelect {
    */
   public function getDefaultProperties() {
     $properties = parent::getDefaultProperties() + [
-        'force_deepest' => FALSE,
-        'force_deepest_error' => '',
-        'cache_options' => FALSE,
-        'depth_labels' => [],
-      ];
+      'force_deepest' => FALSE,
+      'force_deepest_error' => '',
+      'cache_options' => FALSE,
+      'depth_labels' => [],
+    ];
 
     unset($properties['select2']);
     unset($properties['chosen']);
@@ -137,10 +138,12 @@ class ShsTermSelect extends WebformTermSelect {
   /**
    * Ajax submit callback for depth labels.
    *
-   * @param $form
+   * @param array $form
+   *   Form array.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state object.
    */
-  public static function addDepthLevelSubmit($form, FormStateInterface $form_state) {
+  public static function addDepthLevelSubmit(array $form, FormStateInterface $form_state) {
     $current_total = $form_state->get('depth_labels_total_items') ?: 1;
     $form_state->set('depth_labels_total_items', $current_total + 1);
     $form_state->setRebuild(TRUE);
@@ -149,11 +152,12 @@ class ShsTermSelect extends WebformTermSelect {
   /**
    * Ajax callback for the depth labels.
    *
-   * @param $form
+   * @param array $form
+   *   Form array.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
-   * @return array
+   *   Form state object.
    */
-  public static function addDepthLevelAjax($form, FormStateInterface $form_state) {
+  public static function addDepthLevelAjax(array $form, FormStateInterface $form_state) {
     return $form['properties']['term_reference']['depth_labels'];
   }
 
@@ -198,6 +202,7 @@ class ShsTermSelect extends WebformTermSelect {
    *
    * @return \Drupal\taxonomy\TermStorageInterface
    *   Taxonomy term storage.
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   protected function getTermStorage() {
@@ -220,7 +225,7 @@ class ShsTermSelect extends WebformTermSelect {
     $properties = parent::getConfigurationFormProperties($form, $form_state);
     $depth_labels = [];
     foreach ($form_state->getCompleteFormState()
-               ->getValue('depth_labels') as $key => $value) {
+      ->getValue('depth_labels') as $key => $value) {
       if (is_numeric($key) && !empty($value)) {
         $depth_labels[] = $value;
       }
@@ -233,7 +238,7 @@ class ShsTermSelect extends WebformTermSelect {
    * {@inheritdoc}
    */
   protected function setOptions(array &$element) {
-    \Drupal\webform_shs\Element\ShsTermSelect::setOptions($element);
+    ShsTermSelect::setOptions($element);
   }
 
 }

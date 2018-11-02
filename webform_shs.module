@@ -5,20 +5,19 @@
  * Webform component which renders a "shs" field.
  */
 
+use Drupal\taxonomy\TermInterface;
+use Drupal\webform_shs\Element\ShsTermSelect;
+
 /**
  * Implements hook_ENTITY_TYPE_presave().
- *
- * @param \Drupal\taxonomy\TermInterface $term
  */
-function webform_shs_taxonomy_term_presave(\Drupal\taxonomy\TermInterface $term) {
-  \Drupal\webform_shs\Element\ShsTermSelect::invalidateOptionsCache($term->bundle());
+function webform_shs_taxonomy_term_presave(TermInterface $term) {
+  ShsTermSelect::invalidateOptionsCache($term->bundle());
 }
 
 /**
  * Implements hook_ENTITY_TYPE_delete().
- *
- * @param \Drupal\taxonomy\TermInterface $term
  */
-function webform_shs_taxonomy_term_delete(\Drupal\taxonomy\TermInterface $term) {
-  \Drupal\webform_shs\Element\ShsTermSelect::invalidateOptionsCache($term->bundle());
+function webform_shs_taxonomy_term_delete(TermInterface $term) {
+  ShsTermSelect::invalidateOptionsCache($term->bundle());
 }

@@ -16,7 +16,7 @@ class ShsTermSelect extends Select {
   /**
    * Locally cached list of term options.
    *
-   * @var NULL|array
+   * @var null|array
    */
   protected static $options = NULL;
 
@@ -25,12 +25,12 @@ class ShsTermSelect extends Select {
    */
   public function getInfo() {
     return [
-        '#vocabulary' => '',
-        '#force_deepest' => FALSE,
-        '#force_deepest_error' => '',
-        '#cache_options' => FALSE,
-        '#depth_labels' => [],
-      ] + parent::getInfo();
+      '#vocabulary' => '',
+      '#force_deepest' => FALSE,
+      '#force_deepest_error' => '',
+      '#cache_options' => FALSE,
+      '#depth_labels' => [],
+    ] + parent::getInfo();
   }
 
   /**
@@ -175,9 +175,10 @@ class ShsTermSelect extends Select {
    *
    * @return array
    *   An associative array of term options.
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
-  protected static function getOptions($element) {
+  protected static function getOptions(array $element) {
 
     if (is_null(static::$options)) {
       static::$options = self::buildOptions($element['#vocabulary'], !empty($element['#cache_options']));
@@ -219,9 +220,11 @@ class ShsTermSelect extends Select {
    *   Vocabulary id.
    * @param bool $cache_options
    *   Should we use cache?
+   *
    * @return array
    *   An associative array of terms, where keys are tid and values are
    *   term name.
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public static function buildOptions($vid, $cache_options = FALSE) {
@@ -242,6 +245,8 @@ class ShsTermSelect extends Select {
    *   Vocabulary id.
    *
    * @return array
+   *   Cached list of term options.
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   protected static function buildCachedTermOptions($vid) {
@@ -265,6 +270,8 @@ class ShsTermSelect extends Select {
    *   Vocabulary id.
    *
    * @return array
+   *   List of term options.
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   protected static function buildTermOptions($vid) {
