@@ -14,7 +14,7 @@ use Drupal\Core\Render\Element\Select;
 class ShsTermSelect extends Select {
 
   /**
-   * Locally cached list of term options.
+   * The list of term options.
    *
    * @var null|array
    */
@@ -179,12 +179,7 @@ class ShsTermSelect extends Select {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   protected static function getOptions(array $element) {
-
-    if (is_null(static::$options)) {
-      static::$options = self::buildOptions($element['#vocabulary'], !empty($element['#cache_options']));
-    }
-
-    return static::$options;
+    return self::buildOptions($element['#vocabulary'], !empty($element['#cache_options']));
   }
 
   /**
@@ -197,9 +192,7 @@ class ShsTermSelect extends Select {
    *   Cache ID.
    */
   public static function getOptionsCacheId($vid) {
-    $cid = 'webform_shs:options:' . $vid;
-
-    return $cid;
+    return 'webform_shs:options:' . $vid;
   }
 
   /**
