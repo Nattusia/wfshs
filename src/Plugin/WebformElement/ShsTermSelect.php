@@ -38,6 +38,7 @@ class ShsTermSelect extends WebformTermSelect {
       'force_deepest_error' => '',
       'cache_options' => FALSE,
       'depth_labels' => [],
+      'addNewLabel' => '',
     ];
 
     unset($properties['select2']);
@@ -77,13 +78,13 @@ class ShsTermSelect extends WebformTermSelect {
     $form['term_reference']['force_deepest'] = [
       '#type' => 'checkbox',
       '#title' => t('Force selection of deepest level'),
-      '#default_value' => isset($element_properties['force_deepest']) ? $element_properties['force_deepest'] : FALSE,
+      '#default_value' => $element_properties['force_deepest'] ?? FALSE,
       '#description' => t('Force users to select terms from the deepest level.'),
     ];
     $form['term_reference']['force_deepest_error'] = [
       '#type' => 'textfield',
       '#title' => t('Custom force deepest error message'),
-      '#default_value' => isset($element_properties['force_deepest_error']) ? $element_properties['force_deepest_error'] : FALSE,
+      '#default_value' => $element_properties['force_deepest_error'] ?? FALSE,
       '#description' => t('If set, this message will be used when a user does not choose the deepest option, instead of the default "You need to select a term from the deepest level in field X." message.'),
       '#states' => [
         'visible' => [
@@ -94,8 +95,14 @@ class ShsTermSelect extends WebformTermSelect {
     $form['term_reference']['cache_options'] = [
       '#type' => 'checkbox',
       '#title' => t('Cache terms'),
-      '#default_value' => isset($element_properties['cache_options']) ? $element_properties['cache_options'] : FALSE,
+      '#default_value' => $element_properties['cache_options'] ?? FALSE,
       '#description' => t('Speeds up the loading time for Vocabularies containing many Taxonomy Terms.'),
+    ];
+
+    $form['term_reference']['addNewLabel'] = [
+      '#type' => 'textfield',
+      '#title' => t('The label of "Add New Item" button'),
+      '#default_value' => $element_properties['addNewLabel'] ?? '',
     ];
 
     $form['term_reference']['depth_labels'] = [

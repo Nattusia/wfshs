@@ -30,6 +30,7 @@ class ShsTermSelect extends Select {
       '#force_deepest_error' => '',
       '#cache_options' => FALSE,
       '#depth_labels' => [],
+      '#addNewLabel' => '',
     ] + parent::getInfo();
   }
 
@@ -54,16 +55,15 @@ class ShsTermSelect extends Select {
       return $element;
     }
 
-    $default_value = isset($element['#value']) ? $element['#value'] : NULL;
     $settings = [
       'required' => $element['#required'],
       'multiple' => $element['#webform_multiple'],
-      'anyLabel' => isset($element['#empty_option']) ? $element['#empty_option'] : t('- None -'),
+      'anyLabel' => $element['#empty_option'] ?? t('- None -'),
       'anyValue' => '_none',
       'force_deepest' => $element['#force_deepest'],
       'cache_options' => $element['#cache_options'],
       '#depth_labels' => [],
-      'addNewLabel' => t('Add another item'),
+      'addNewLabel' => $element['#addNewLabel'] ?: t('Add another item'),
     ];
 
     /** @var \Drupal\shs\WidgetDefaults $widget_defaults */
@@ -73,8 +73,8 @@ class ShsTermSelect extends Select {
 
     // Define default parents for the widget.
     $parents = $widget_defaults->getInitialParentDefaults($settings['anyValue'], $cardinality);
-    if ($default_value) {
-      $parents = $widget_defaults->getParentDefaults($default_value, $settings['anyValue'], 'taxonomy_term', $cardinality);
+    if (!is_null($element['#value'])) {
+      $parents = $widget_defaults->getParentDefaults($element['#value'], $settings['anyValue'], 'taxonomy_term', $cardinality);
     }
 
     $settings_shs = [
@@ -84,7 +84,7 @@ class ShsTermSelect extends Select {
       'baseUrl' => 'shs-term-data',
       'cardinality' => $cardinality,
       'parents' => $parents,
-      'defaultValue' => $default_value,
+      'defaultValue' => $element['#value'] ?? NULL,
     ];
 
     $hooks = [
