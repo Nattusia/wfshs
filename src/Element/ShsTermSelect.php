@@ -126,11 +126,16 @@ class ShsTermSelect extends Select {
     }
 
     $value = $form_state->getValue($element['#name']);
+
     if (!is_array($value)) {
       $value = [$value];
     }
 
     foreach ($value as $element_value) {
+      if ($element_value == 0) {
+        continue;
+      }
+
       // If nothing was selected.
       if (($element['#shs']['settings']['anyValue'] === $element_value)) {
         // Skip this value row and check the next one.
